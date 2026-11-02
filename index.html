@@ -2739,34 +2739,56 @@
 
       <div class="modal-body">
         <p style="font-size:13.5px; line-height:1.5; color:var(--text-main);">
-          مزامنة حية ومباشرة في الاتجاهين: يقرأ المواعيد المسجلة في تقويم جوجل ويجلبها ككروت في التطبيق، وفي نفس الوقت يرسل كروت التطبيق لتقويم جوجل دون أي تكرار!
+          مزامنة مباشرة في الاتجاهين بين مواعيد تقويم Google وكروت الأسبوع في التطبيق دون أي تكرار.
         </p>
 
         <!-- Connection Settings Box -->
         <div class="export-box" style="margin-top:12px; background:rgba(37,99,235,0.08); border-color:rgba(37,99,235,0.25);">
-          <div style="font-weight:700; font-size:13.5px; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between;">
+          <div style="font-weight:700; font-size:13.5px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between;">
             <div style="display:flex; align-items:center; gap:8px;">
-              <span>🔑</span> <span>Google Account & Authorization</span>
+              <span>🔑</span> <span>حالة الاتصال بحساب Google</span>
             </div>
             <span class="sync-status-pill" id="sync-status-badge" style="font-size:11px; padding:2px 8px; border-radius:10px; background:rgba(239,68,68,0.2); color:#fca5a5;">Not Connected</span>
           </div>
 
-          <div class="form-group" style="margin-bottom:8px;">
-            <label style="font-size:11.5px; color:#94a3b8;">Google OAuth Client ID (or Bearer Access Token):</label>
-            <input type="text" id="gcal-auth-token" class="form-input" style="font-size:12px; font-family:monospace;" placeholder="Enter Client ID or paste Access Token (or click Connect below)...">
+          <!-- One-Click Google Sign-in Button -->
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:10px;">
+            <button class="btn btn-primary" id="btn-gcal-connect-auth" style="flex:1; min-width:200px; padding:9px 14px; font-size:13px; font-weight:700; background:linear-gradient(135deg, #2563eb, #1d4ed8); display:flex; align-items:center; justify-content:center; gap:8px;">
+              <span>⚡</span> <span>تسجيل الدخول بحساب Google (Sign in)</span>
+            </button>
+            <button class="btn btn-secondary" id="btn-disconnect-auth" style="font-size:12px; padding:8px 12px; display:none;">
+              Disconnect (قطع)
+            </button>
           </div>
 
-          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-            <button class="btn btn-secondary" id="btn-gcal-connect-auth" style="font-size:12px; padding:6px 12px; border-color:rgba(59,130,246,0.4); color:#93c5fd;">
-              ⚡ Connect Google Account
-            </button>
-            <button class="btn btn-secondary" id="btn-save-auth-token" style="font-size:12px; padding:6px 12px;">
-              💾 Save
-            </button>
-            <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="font-size:11.5px; color:#38bdf8; text-decoration:underline; margin-left:auto;">
-              Get Client ID (Free) ↗
-            </a>
-          </div>
+          <!-- Expandable Settings Accordion -->
+          <details id="sync-config-details" style="font-size:12px; border-top:1px dashed rgba(255,255,255,0.1); padding-top:8px; margin-top:6px;">
+            <summary style="cursor:pointer; font-weight:700; color:#38bdf8; user-select:none; margin-bottom:8px;">
+              ⚙️ خيارات الربط والـ Credentials (إدخال Client ID أو Access Token يدوياً)
+            </summary>
+
+            <div class="form-group" style="margin-bottom:8px;">
+              <label style="font-size:11.5px; color:#94a3b8;">Google OAuth Client ID (للتسجيل بضغطة زر):</label>
+              <div style="display:flex; gap:6px;">
+                <input type="text" id="gcal-client-id" class="form-input" style="font-size:11.5px; font-family:monospace;" placeholder="xxxxxx.apps.googleusercontent.com">
+                <button class="btn btn-secondary" id="btn-save-client-id" style="font-size:11px; padding:4px 10px;">حفظ</button>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom:8px;">
+              <label style="font-size:11.5px; color:#94a3b8;">أو Access Token فوري مباشر (Bearer ya29...):</label>
+              <div style="display:flex; gap:6px;">
+                <input type="text" id="gcal-auth-token" class="form-input" style="font-size:11.5px; font-family:monospace;" placeholder="ya29.a0...">
+                <button class="btn btn-secondary" id="btn-save-auth-token" style="font-size:11px; padding:4px 10px;">حفظ</button>
+              </div>
+            </div>
+
+            <div style="background:rgba(0,0,0,0.25); border-radius:6px; padding:8px; line-height:1.5; color:#cbd5e1; font-size:11px; margin-top:6px;">
+              <div style="font-weight:700; color:#fbbf24; margin-bottom:3px;">💡 كيف تحصل على الصلاحية في دقيقة؟</div>
+              <div>• <strong>الطريقة الأسرع (30 ثانية):</strong> افتح <a href="https://developers.google.com/oauthplayground" target="_blank" style="color:#38bdf8; text-decoration:underline;">Google OAuth Playground</a>، اختر <em>Google Calendar API v3 -> calendar.events</em>، واضغط <strong>Authorize</strong> ثم <strong>Exchange</strong> وانسخ الـ Access token والصقه في الخانة فوق!</div>
+              <div style="margin-top:4px;">• <strong>طريقة الـ Client ID الدائم:</strong> من <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color:#38bdf8; text-decoration:underline;">Google Cloud Console</a> أنشئ OAuth Web Client ID وضع في Authorized Origins: <code style="background:rgba(255,255,255,0.1); padding:1px 4px; border-radius:3px;">https://adamaladdin97.github.io</code></div>
+            </div>
+          </details>
         </div>
 
         <!-- Sync Actions Box -->
@@ -2786,7 +2808,7 @@
         </button>
 
         <!-- Live Sync Progress Log -->
-        <div class="sync-log-box" id="sync-log-box" style="margin-top:14px; background:rgba(0,0,0,0.3); border:1px solid var(--border-soft); border-radius:8px; padding:10px; max-height:120px; overflow-y:auto; font-size:11.5px; font-family:monospace; color:#cbd5e1; display:none;">
+        <div class="sync-log-box" id="sync-log-box" style="margin-top:14px; background:rgba(0,0,0,0.3); border:1px solid var(--border-soft); border-radius:8px; padding:10px; max-height:140px; overflow-y:auto; font-size:11.5px; font-family:monospace; color:#cbd5e1; display:none;">
           <div id="sync-log-content">Ready.</div>
         </div>
       </div>
@@ -5314,26 +5336,45 @@
     /* ==========================================================
        GOOGLE CALENDAR 2-WAY LIVE SYNC (REST API v3)
        ========================================================== */
+    function updateSyncBadge() {
+      const badge = document.getElementById('sync-status-badge');
+      const disconnectBtn = document.getElementById('btn-disconnect-auth');
+      const token = localStorage.getItem('deskflow_gcal_access_token') || '';
+      const clientId = localStorage.getItem('deskflow_gcal_client_id') || '';
+
+      if (badge) {
+        if (token) {
+          badge.textContent = '🟢 متصل وجاهز';
+          badge.style.background = 'rgba(34,197,94,0.2)';
+          badge.style.color = '#86efac';
+          if (disconnectBtn) disconnectBtn.style.display = 'inline-block';
+        } else if (clientId) {
+          badge.textContent = '🟡 بانتظار تسجيل الدخول';
+          badge.style.background = 'rgba(234,179,8,0.2)';
+          badge.style.color = '#fde047';
+          if (disconnectBtn) disconnectBtn.style.display = 'none';
+        } else {
+          badge.textContent = '🔴 غير متصل';
+          badge.style.background = 'rgba(239,68,68,0.2)';
+          badge.style.color = '#fca5a5';
+          if (disconnectBtn) disconnectBtn.style.display = 'none';
+        }
+      }
+    }
+
     function openSyncModal() {
       const modal = document.getElementById('sync-modal');
       const weekLabel = document.getElementById('sync-target-week-label');
+      const clientIdInput = document.getElementById('gcal-client-id');
       const tokenInput = document.getElementById('gcal-auth-token');
-      const badge = document.getElementById('sync-status-badge');
-      
-      const savedKey = localStorage.getItem('deskflow_gcal_auth') || '';
-      if (tokenInput) tokenInput.value = savedKey;
 
-      if (badge) {
-        if (savedKey) {
-          badge.textContent = 'Authorized';
-          badge.style.background = 'rgba(34,197,94,0.2)';
-          badge.style.color = '#86efac';
-        } else {
-          badge.textContent = 'Not Connected';
-          badge.style.background = 'rgba(239,68,68,0.2)';
-          badge.style.color = '#fca5a5';
-        }
-      }
+      const savedClientId = localStorage.getItem('deskflow_gcal_client_id') || '';
+      const savedToken = localStorage.getItem('deskflow_gcal_access_token') || '';
+
+      if (clientIdInput) clientIdInput.value = savedClientId;
+      if (tokenInput) tokenInput.value = savedToken;
+
+      updateSyncBadge();
 
       if (weekLabel) {
         const rangeEl = document.getElementById('desk-week-range');
@@ -5358,17 +5399,39 @@
       }
     }
 
-    function getAuthKey() {
-      const input = document.getElementById('gcal-auth-token');
-      return (input ? input.value.trim() : '') || localStorage.getItem('deskflow_gcal_auth') || '';
+    function getValidAccessToken() {
+      return localStorage.getItem('deskflow_gcal_access_token') || 
+             (document.getElementById('gcal-auth-token') ? document.getElementById('gcal-auth-token').value.trim() : '');
+    }
+
+    async function ensureAuthBeforeSync() {
+      const token = getValidAccessToken();
+      if (token && token.length > 15) {
+        return token;
+      }
+
+      // Check if Client ID exists to trigger Google Sign In popup
+      const clientId = localStorage.getItem('deskflow_gcal_client_id') || 
+                       (document.getElementById('gcal-client-id') ? document.getElementById('gcal-client-id').value.trim() : '');
+
+      if (clientId && window.google && window.google.accounts && window.google.accounts.oauth2) {
+        logSync('🔑 جاري طلب تسجيل الدخول بحساب Google...');
+        showToast('يرجى اختيار حساب Google والموافقة في النافذة المنبثقة...');
+        initGoogleAuthClient();
+        return null;
+      }
+
+      // Neither exists!
+      logSync('⚠️ تنبيه: يتطلب المزامنة مع تقويم جوجل تسجيل الدخول أو إدخال Access Token أولاً.');
+      const details = document.getElementById('sync-config-details');
+      if (details) details.open = true;
+      alert('⚠️ مطلوب تصريح وصول لتقويم Google:\n\n• إذا كان لديك Google Client ID، اضغط "تسجيل الدخول بحساب Google".\n• أو الصق Access Token فوري من Google OAuth Playground في خانة الإعدادات.');
+      return null;
     }
 
     async function pullFromGoogleCalendar() {
-      const key = getAuthKey();
-      if (!key) {
-        alert('Please enter your Google OAuth Client ID or Access Token first (أدخل مفتاح الصلاحية أولاً)');
-        return false;
-      }
+      const token = await ensureAuthBeforeSync();
+      if (!token) return false;
 
       logSync('Fetching events from Google Calendar API...');
       const parts = (state.weekStartDate || getCurrentMonday()).split('-').map(Number);
@@ -5382,10 +5445,16 @@
       try {
         const res = await fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true`, {
           headers: {
-            'Authorization': `Bearer ${key}`,
+            'Authorization': `Bearer ${token}`,
             'Accept': 'application/json'
           }
         });
+
+        if (res.status === 401) {
+          localStorage.removeItem('deskflow_gcal_access_token');
+          updateSyncBadge();
+          throw new Error('انتهت صلاحية جلسة جوجل (Session Expired/Invalid). يرجى الضغط على "تسجيل الدخول بحساب Google" لتجديد التصريح.');
+        }
 
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
@@ -5449,17 +5518,14 @@
         return true;
       } catch (err) {
         logSync(`❌ Error fetching from Google Calendar: ${err.message}`);
-        alert(`Google Calendar API Error: ${err.message}\nTip: Make sure your Bearer token is valid and has calendar.events scope.`);
+        alert(`Google Calendar API Error:\n${err.message}`);
         return false;
       }
     }
 
     async function pushToGoogleCalendar() {
-      const key = getAuthKey();
-      if (!key) {
-        alert('Please enter your Google OAuth Client ID or Access Token first');
-        return false;
-      }
+      const token = await ensureAuthBeforeSync();
+      if (!token) return false;
 
       logSync('Pushing cards to Google Calendar...');
       const scheduledCards = state.cards.filter(c => c.day && c.day !== 'unassigned' && isCardInActiveWeek(c));
@@ -5496,7 +5562,7 @@
             const res = await fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${card.googleEventId}`, {
               method: 'PATCH',
               headers: {
-                'Authorization': `Bearer ${key}`,
+                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
               },
               body: JSON.stringify(body)
@@ -5507,7 +5573,7 @@
             const res = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
               method: 'POST',
               headers: {
-                'Authorization': `Bearer ${key}`,
+                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
               },
               body: JSON.stringify(body)
@@ -5546,49 +5612,48 @@
     }
 
     function initGoogleAuthClient() {
-      const key = getAuthKey();
-      if (!key) {
-        const userKey = prompt('Please enter your Google OAuth Client ID or OAuth Access Token:\n(أدخل Google Client ID أو Bearer Token للمزامنة الحية)');
-        if (userKey) {
-          localStorage.setItem('deskflow_gcal_auth', userKey.trim());
-          const tokenInput = document.getElementById('gcal-auth-token');
-          if (tokenInput) tokenInput.value = userKey.trim();
-          const badge = document.getElementById('sync-status-badge');
-          if (badge) {
-            badge.textContent = 'Authorized';
-            badge.style.background = 'rgba(34,197,94,0.2)';
-            badge.style.color = '#86efac';
-          }
-          showToast('Google credentials saved!');
+      let clientId = localStorage.getItem('deskflow_gcal_client_id') || 
+                     (document.getElementById('gcal-client-id') ? document.getElementById('gcal-client-id').value.trim() : '');
+
+      if (!clientId) {
+        const userKey = prompt('الرجاء إدخال Google OAuth Client ID الخاص بك:\n(مثال: 12345-xxxx.apps.googleusercontent.com)\n\nأو يمكنك إلغاء الأمر ولصق Access Token مباشر في الأسفل.');
+        if (userKey && userKey.trim()) {
+          clientId = userKey.trim();
+          localStorage.setItem('deskflow_gcal_client_id', clientId);
+          const inp = document.getElementById('gcal-client-id');
+          if (inp) inp.value = clientId;
+        } else {
+          const details = document.getElementById('sync-config-details');
+          if (details) details.open = true;
+          return;
         }
-        return;
       }
 
       if (window.google && window.google.accounts && window.google.accounts.oauth2) {
         try {
           const client = google.accounts.oauth2.initTokenClient({
-            client_id: key,
+            client_id: clientId,
             scope: 'https://www.googleapis.com/auth/calendar.events',
             callback: (tokenResponse) => {
               if (tokenResponse && tokenResponse.access_token) {
-                localStorage.setItem('deskflow_gcal_auth', tokenResponse.access_token);
-                document.getElementById('gcal-auth-token').value = tokenResponse.access_token;
-                const badge = document.getElementById('sync-status-badge');
-                if (badge) {
-                  badge.textContent = 'Authorized';
-                  badge.style.background = 'rgba(34,197,94,0.2)';
-                  badge.style.color = '#86efac';
-                }
-                showToast('Connected to Google Calendar successfully!');
+                localStorage.setItem('deskflow_gcal_access_token', tokenResponse.access_token);
+                const tokenInput = document.getElementById('gcal-auth-token');
+                if (tokenInput) tokenInput.value = tokenResponse.access_token;
+                updateSyncBadge();
+                logSync('✅ Successfully connected to Google Calendar!');
+                showToast('🎉 تم تسجيل الدخول بنجاح! يمكنك الآن المزامنة.');
+              } else if (tokenResponse && tokenResponse.error) {
+                logSync(`❌ خطأ في المصادقة: ${tokenResponse.error}`);
+                alert(`Google Auth Error: ${tokenResponse.error}`);
               }
             }
           });
           client.requestAccessToken();
         } catch (e) {
-          alert('Could not initialize Google Identity Services with this key: ' + e.message);
+          alert('Could not initialize Google Identity Services: ' + e.message);
         }
       } else {
-        showToast('Key saved. Ready for direct API sync.');
+        alert('مكتبة Google Identity Services غير محملة. تأكد من اتصال الإنترنت.');
       }
     }
 
@@ -5766,18 +5831,35 @@
 
       const btnConnectAuth = document.getElementById('btn-gcal-connect-auth');
       if (btnConnectAuth) btnConnectAuth.addEventListener('click', initGoogleAuthClient);
+
+      const btnDisconnectAuth = document.getElementById('btn-disconnect-auth');
+      if (btnDisconnectAuth) {
+        btnDisconnectAuth.addEventListener('click', () => {
+          localStorage.removeItem('deskflow_gcal_access_token');
+          const tokenInput = document.getElementById('gcal-auth-token');
+          if (tokenInput) tokenInput.value = '';
+          updateSyncBadge();
+          showToast('تم إلغاء الاتصال بحساب Google');
+        });
+      }
+
+      const btnSaveClientId = document.getElementById('btn-save-client-id');
+      if (btnSaveClientId) {
+        btnSaveClientId.addEventListener('click', () => {
+          const val = (document.getElementById('gcal-client-id').value || '').trim();
+          localStorage.setItem('deskflow_gcal_client_id', val);
+          updateSyncBadge();
+          showToast(val ? 'تم حفظ Google Client ID' : 'تم مسح Client ID');
+        });
+      }
+
       const btnSaveAuth = document.getElementById('btn-save-auth-token');
       if (btnSaveAuth) {
         btnSaveAuth.addEventListener('click', () => {
           const val = (document.getElementById('gcal-auth-token').value || '').trim();
-          localStorage.setItem('deskflow_gcal_auth', val);
-          const badge = document.getElementById('sync-status-badge');
-          if (badge) {
-            badge.textContent = val ? 'Authorized' : 'Not Connected';
-            badge.style.background = val ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)';
-            badge.style.color = val ? '#86efac' : '#fca5a5';
-          }
-          showToast(val ? 'Google credentials saved!' : 'Credentials cleared');
+          localStorage.setItem('deskflow_gcal_access_token', val);
+          updateSyncBadge();
+          showToast(val ? 'تم حفظ Access Token!' : 'تم مسح Access Token');
         });
       }
 
