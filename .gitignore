@@ -1,0 +1,5 @@
+android-build/build/
+android-build/gen/
+android-build/obj/
+android-build/dex/
+.DS_Store
